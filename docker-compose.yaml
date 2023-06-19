@@ -1,0 +1,26 @@
+version: "3.2"
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ./rabbitmq/data/:/var/lib/rabbitmq/
+        - ./rabbitmq/log/:/var/log/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBIT_USERNAME}
+      - RABBITMQ_DEFAULT_PASS=${RABBIT_PASSWORD}
+    
+  server:
+    build: ./server
+    environment:
+      - PORT=3000
+      - RABBIT_HOSTNAME=${RABBIT_HOSTNAME}
+      - RABBIT_USERNAME=${RABBIT_USERNAME}
+      - RABBIT_PASSWORD=${RABBIT_PASSWORD}
+    volumes:
+      - ./server/src:/app/src
+    depends_on:
+      - rabbitmq
