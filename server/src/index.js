@@ -14,6 +14,10 @@ app.use(bodyParser.json())
 
 app.post("/url",async (req,res)=>{
     console.log("=> body : ", req.body)
+    publishToQueue('main','lksfd')
+    res.status(200).json({
+        message : 'done'
+    })
 })
 
 app.listen(PORT, ()=>{
