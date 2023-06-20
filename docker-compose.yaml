@@ -28,8 +28,34 @@ services:
       - RABBIT_PASSWORD=${RABBIT_PASSWORD}
     volumes:
       - ./server/src:/app/src
+      - ./server/uploads:/app/uploads
     depends_on:
       rabbitmq:
         condition: service_healthy
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
+
+  worker:
+    build: ./worker
+    environment:
+      - SERVER_URL=http://server:${SERVER_PORT}
+      - RABBIT_HOSTNAME=${RABBIT_HOSTNAME}
+      - RABBIT_USERNAME=${RABBIT_USERNAME}
+      - RABBIT_PASSWORD=${RABBIT_PASSWORD}
+    volumes:
+      - ./worker/src:/app/src
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    deploy:
+      mode: replicated
+      replicas: 2
+      endpoint_mode: vip
+
+  mongodb:
+    image: mongo:6-jammy
+    ports:
+      - ${MONGO_PORT}:27017
+    volumes:
+      - mongodb:/data/db
+  
