@@ -31,6 +31,7 @@ amqp.connect(FULL_URL, function(error0, connection) {
             console.log(" [x] Received %s", msg.content.toString() );
             if(Math.random()<0.5){
                 try {
+                    console.log( "==> content : ", JSON.parse(msg.content.toString()) )
                     const {name, id} = JSON.parse( msg.content.toString() )
                     console.log( " xx DONE xx : ", name )
                     createInvoice( name )
