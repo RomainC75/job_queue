@@ -3,6 +3,8 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const {publishToQueue} = require('./services/rabbit.service')
 const multer = require('multer')
+const Invoice = require('./models/invoice')
+require('./db/mongo') 
 
 const app = express()
 
@@ -25,16 +27,34 @@ const storage = multer.diskStorage({
   });
 const upload = multer({ storage });
 
-app.post('/upload/:id', upload.single('file'), (req, res) => {
-    console.log("=>", req.params.id, req.headers)
+app.post('/upload/:id', upload.single('file'), async(req, res, next) => {
+  try {
+    const ans= await Invoice.findByIdAndUpdate(req.params.id, {
+      isDone: true,
+    }, {new: true})
+    console.log("=>", req.params.id, req.headers, ans)
     res.status(201).send('File uploaded successfully.');
+  } catch (error) {
+    next(error)
+  }
   });
 
-app.post("/url",async (req,res)=>{
-    publishToQueue('main',req.body.name)
+app.post("/url",async (req,res, next)=>{
+  try {
+    const ans = await Invoice.create({name:req.body.name})
+    publishToQueue('main', req.body.name, ans._id.toString())
     res.status(200).json({
         message : 'done'
     })
+  } catch (error) {
+    console.log("=> error ")
+    next(error)
+  }
+})
+
+app.use((err, req, res, next)=>{
+  console.log("==> server ERROR", err)
+  res.status(400).json(err)
 })
 
 app.listen(PORT, ()=>{

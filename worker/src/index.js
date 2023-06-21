@@ -28,15 +28,15 @@ amqp.connect(FULL_URL, function(error0, connection) {
         console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
 
         channel.consume(queue, async function(msg) {
-            console.log(" [x] Received %s", msg.content.toString());
+            console.log(" [x] Received %s", msg.content.toString() );
             if(Math.random()<0.5){
                 try {
-                    const name = msg.content.toString()
-                    console.log(" xx DONE xx : ", name)
-                    createInvoice(name)
+                    const {name, id} = JSON.parse( msg.content.toString() )
+                    console.log( " xx DONE xx : ", name )
+                    createInvoice( name )
                     // console.log("invoice done")
-                    await new Promise((resolve)=>setTimeout(()=>{resolve()},1000))
-                    const ans = await sendFileToServer( "output.pdf" )
+                    await new Promise((resolve)=>setTimeout(()=>{resolve()},10000))
+                    const ans = await sendFileToServer( id )
                     console.log("==> DONE !!!!!!!!!!!", ans)
                     channel.ack(msg)
                 } catch (error) {

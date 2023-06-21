@@ -1,37 +1,52 @@
-version: "3.2"
+version: "3.8"
 services:
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: 'rabbitmq'
     ports:
-        - 5672:5672
-        - 15672:15672
+      - 5672:5672
+      - 15672:15672
     volumes:
-        - ./rabbitmq/data/:/var/lib/rabbitmq/
-        - ./rabbitmq/log/:/var/log/rabbitmq
+      - ./rabbitmq/data/:/var/lib/rabbitmq/
+      - ./rabbitmq/log/:/var/log/rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBIT_USERNAME}
       - RABBITMQ_DEFAULT_PASS=${RABBIT_PASSWORD}
     healthcheck:
-        test: rabbitmq-diagnostics check_port_connectivity
-        interval: 3s
-        timeout: 3s
-        retries: 5
-        start_period: 5s
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 3s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  mongodb:
+    image: mongo:6-jammy
+    ports:
+      - ${MONGO_PORT}:27017
+    volumes:
+      - ./mongodb:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
     
   server:
     build: ./server
+    command: sh -c "until curl -s http://rabbitmq:15672 > /dev/null; do sleep 2; done && npm start"
     environment:
       - PORT=${SERVER_PORT}
       - RABBIT_HOSTNAME=${RABBIT_HOSTNAME}
       - RABBIT_USERNAME=${RABBIT_USERNAME}
       - RABBIT_PASSWORD=${RABBIT_PASSWORD}
+      - MONGO_USERNAME=${MONGODB_USERNAME}
+      - MONGO_PASSWORD=${MONGODB_PASSWORD}
+      - MONGO_PORT=${MONGO_PORT}
+      - MONGO_HOST=${MONGODB_HOST}
     volumes:
       - ./server/src:/app/src
       - ./server/uploads:/app/uploads
     depends_on:
-      rabbitmq:
-        condition: service_healthy
+      - rabbitmq
+      - mongodb
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
 
@@ -52,10 +67,6 @@ services:
       replicas: 2
       endpoint_mode: vip
 
-  mongodb:
-    image: mongo:6-jammy
-    ports:
-      - ${MONGO_PORT}:27017
-    volumes:
-      - mongodb:/data/db
+  
+    
   
