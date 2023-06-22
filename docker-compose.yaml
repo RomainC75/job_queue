@@ -59,6 +59,11 @@ services:
       - RABBIT_PASSWORD=${RABBIT_PASSWORD}
     volumes:
       - ./worker/src:/app/src
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    privileged: true
     depends_on:
       rabbitmq:
         condition: service_healthy
