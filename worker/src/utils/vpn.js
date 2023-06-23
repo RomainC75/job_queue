@@ -30,7 +30,7 @@ function connectToSurfsharkVPN() {
     
     openvpnProcess.stdout.on('data', (data) => {
       console.log("=>OUTPUT : ", data.toString());
-      // You can handle OpenVPN output if needed
+      resolve()
     });
     
     openvpnProcess.stderr.on('data', (data) => {
