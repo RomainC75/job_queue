@@ -9,9 +9,6 @@ const RABBIT_PASSWORD=process.env.RABBIT_PASSWORD;
 
 const FULL_URL = `amqp://${RABBIT_USERNAME}:${RABBIT_PASSWORD}@${RABBIT_HOSTNAME}`;
 
-
-
-
 amqp.connect(FULL_URL, function(error0, connection) {
     if (error0) {
         console.log("=> error0", error0)

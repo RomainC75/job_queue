@@ -35,7 +35,8 @@ RUN apt-get update && apt-get install -y \
     libxss1 \
     libxtst6 \
     xdg-utils \
-    openvpn
+    openvpn \
+    docker.io 
 
 WORKDIR /app
 
@@ -47,4 +48,4 @@ RUN npm install
 
 COPY . .
 
-# CMD [ "npm", "run", "test" ]
+CMD [ "npm", "run", "test" ]

@@ -5,9 +5,15 @@ const ovpnFilePath = "src/utils/ovpns/jp001.ovpn"
 const passFilePath = "src/utils/ovpns/pass.txt"
 
 const command = `openvpn --config ${ovpnFilePath} --auth-user-pass ${passFilePath}`
-
+console.log("=> COMMAND : ", command)
 function connectToSurfsharkVPN() {
   return new Promise(async (resolve, reject) => {
+
+    exec('docker ps', (error, stdout, stderr) => {
+      console.log( "================>" )
+      console.log( "================>" )
+      console.log( "=> ", stdout )
+    })
 
     const workingDir = await fsp.realpath('.');
     console.log("=> pwd : ", workingDir)

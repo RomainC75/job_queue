@@ -59,6 +59,7 @@ services:
       - RABBIT_PASSWORD=${RABBIT_PASSWORD}
     volumes:
       - ./worker/src:/app/src
+      - /var/run/docker.sock:/var/run/docker.sock
     cap_add:
       - NET_ADMIN
     devices:
@@ -71,8 +72,8 @@ services:
       mode: replicated
       replicas: 2
       endpoint_mode: vip
-    command: npm run test
+    
 
-  
+
     
   
