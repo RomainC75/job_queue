@@ -70,7 +70,7 @@ services:
         condition: service_healthy
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 5
       endpoint_mode: vip
     
 

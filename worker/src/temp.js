@@ -1,14 +1,9 @@
 const puppeteer = require("puppeteer")
 const connectToSurfsharkVPN = require('./utils/vpn')
-const getContainerName = require('./utils/getContainerName')
-
 
 const getInfos = () =>{
     console.log("==> running ")
     return new Promise ( async (resolve, reject) =>{
-        
-        const CONTAINER_NAME = await getContainerName()
-        console.log( "=> PROCESS ID ", CONTAINER_NAME )
         
         await connectToSurfsharkVPN()
         await new Promise((resolve)=>setTimeout(()=>{resolve()},2000))
