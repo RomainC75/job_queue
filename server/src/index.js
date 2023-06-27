@@ -4,6 +4,7 @@ const cors = require('cors')
 const {publishToQueue} = require('./services/rabbit.service')
 const multer = require('multer')
 const Invoice = require('./models/invoice')
+const Pokemon = require('./models/Pokemon')
 require('./db/mongo') 
 
 const app = express()
@@ -39,7 +40,7 @@ app.post('/upload/:id', upload.single('file'), async(req, res, next) => {
   }
   });
 
-app.post("/url",async (req,res, next)=>{
+app.post("/url",async (req, res, next)=>{
   try {
     const ans = await Invoice.create({name:req.body.name})
     publishToQueue('main', req.body.name, ans._id.toString())
@@ -48,6 +49,24 @@ app.post("/url",async (req,res, next)=>{
     })
   } catch (error) {
     console.log("=> error ")
+    next(error)
+  }
+})
+
+app.get("/pokemon/:name", async (req, res, next)=>{
+  try {
+    const name = req.params.name
+    const foundPokemon = await Pokemon.find({name})
+    if(foundPokemon){
+      return res.status(200).json(foundPokemon)
+    }
+    const ans = await Pokemon.create({name})
+    publishToQueue('pokemon', name, ans._id.toString())
+    console.log("=> name : ", req.params.name)
+    res.status(200).json({
+      message: 'done'
+    })
+  } catch (error) {
     next(error)
   }
 })
