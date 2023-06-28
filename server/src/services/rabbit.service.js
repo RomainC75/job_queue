@@ -19,8 +19,8 @@ amqp.connect(`amqp://${RABBIT_USERNAME}:${RABBIT_PASSWORD}@${HOSTNAME}`, functio
    });
 });
 
-const publishToQueue = async (queueName, name, id) =>{
-  const val = JSON.stringify({name,id})
+const publishToQueue = async (queueName, url, id) =>{
+  const val = JSON.stringify({url,id})
   console.log("'= val ", val)
     ch.sendToQueue(queueName, Buffer.from(val))
 }

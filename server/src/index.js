@@ -4,6 +4,7 @@ const cors = require('cors')
 const {publishToQueue} = require('./services/rabbit.service')
 const multer = require('multer')
 const Invoice = require('./models/invoice')
+const Video = require('./models/video.model')
 require('./db/mongo') 
 
 const app = express()
@@ -41,8 +42,8 @@ app.post('/upload/:id', upload.single('file'), async(req, res, next) => {
 
 app.post("/url",async (req,res, next)=>{
   try {
-    const ans = await Invoice.create({name:req.body.name})
-    publishToQueue('main', req.body.name, ans._id.toString())
+    const ans = await Video.create({url:req.body.url})
+    publishToQueue('ytDownload', req.body.url, ans._id.toString())
     res.status(200).json({
         message : 'done'
     })

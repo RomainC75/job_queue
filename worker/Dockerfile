@@ -48,4 +48,4 @@ RUN npm install
 
 COPY . .
 
-CMD [ "npm", "run", "test" ]
+CMD [ "npm", "run", "start" ]
